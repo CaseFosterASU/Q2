@@ -1,0 +1,32 @@
+import numpy as np
+
+# Inputs
+U = 1
+chord = 1
+angle = np.deg2rad(7)
+camber = 0.02 #naca2412
+x_vals = np.linspace(0.001, chord - 0.001, 100)
+
+# Camber line and its derivative
+upper_surface = 4 * camber * x_vals / chord * (1 - x_vals / chord)
+lower_surface = 0 * x_vals
+z_camber = (upper_surface + lower_surface) / 2
+dz_camber = (-4 * camber * (2 * x_vals - chord)) / chord**2
+
+
+theta_vals = np.arccos(1 - 2 * x_vals)
+zcos1 = dz_camber * np.cos(theta_vals)
+zcos2 = dz_camber * np.cos(2 * theta_vals)
+
+
+B0 = angle - (1 / np.pi) * np.trapz(dz_camber, theta_vals)
+B1 = (2 / np.pi) * np.trapz(zcos1, theta_vals)
+B2 = (2 / np.pi) * np.trapz(zcos2, theta_vals)
+
+
+lift_coeff = 2 * np.pi * (B0 + B1 / 2)
+moment_coeff = -np.pi / 2 * (B0 + B1 - 0.5 * B2)
+
+#output
+print(f"Lift Coefficient: {lift_coeff:.4f}")
+print(f"Moment Coefficient: {moment_coeff:.4f}")
